@@ -132,8 +132,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                     margin: EdgeInsets.all(10.0),
                                     height: 40.0,
                                     decoration: BoxDecoration(
-                                      color: Colors
-                                          .white, //Theme.of(context).primaryColor,
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(15.0)),
                                     ),
