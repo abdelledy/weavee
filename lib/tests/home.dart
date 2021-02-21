@@ -1,113 +1,249 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:weavee/tests/models/days.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 
-class Home extends StatefulWidget {
+class ChangeLoc extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _AppState createState() => _AppState();
 }
 
-class _HomeState extends State<Home> {
-  String woeid;
-  Future<Days> fetchWoei(String city) async {
-    final response = await http
-        .get('https://www.metaweather.com/api/location/search/?query=$city');
-    if (response != null) {
-      var result = jsonDecode(response.body)[0];
-      woeid = result['woeid'].toString();
-      // print('Woeid : ' + woeid);
-      // ----------------------- Data ----------------------
-      final weatherData =
-          await http.get('https://www.metaweather.com/api/location/$woeid');
-      if (weatherData != null) {
-        return Days.fromJson(jsonDecode(weatherData.body));
-      } else {
-        throw Exception('Faild to get Woeid');
-      }
-      // ----------------------- Data ----------------------
-    } else {
-      throw Exception('Faild to get Woeid');
-    }
-  }
+List<String> localData = [
+  "Casablanca",
+  "Kinshasa",
+  "Alexandria",
+  "Cairo",
+  "Addis Ababa",
+  "Abidjan",
+  "Mombasa",
+  "Nairobi",
+  "Windhoek",
+  "Cardiff",
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "District of Columbia",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
+  "Rhyl",
+  "Swansea",
+  "Ibadan",
+  "Kano",
+  "Lagos",
+  "South Africa",
+  "Cape Town",
+  "Durban",
+  "Johannesburg",
+  "Beijing",
+  "Chengdu",
+  "Dongguan",
+  "Budapest",
+  "Guangzhou",
+  "Milan",
+  "Naples",
+  "Rome",
+  "Torino",
+  "Venice",
+  "Hangzhou",
+  "Hong Kong",
+  "Shanghai",
+  "Shenzhen",
+  "Tianjin",
+  "Wuhan",
+  "Copenhagen",
+  "Birmingham",
+  "Blackpool",
+  "Bournemouth",
+  "Bradford",
+  "Brighton",
+  "Bristol",
+  "Cambridge",
+  "Coventry",
+  "Derby",
+  "Exeter",
+  "Falmouth",
+  "Huddersfield",
+  "Ipswich",
+  "Kingston upon Hull",
+  "Leeds",
+  "Leicester",
+  "Liverpool",
+  "London",
+  "Luton",
+  "Manchester",
+  "Middlesbrough",
+  "Newcastle",
+  "Northampton",
+  "Norwich",
+  "Nottingham",
+  "Oxford",
+  "Penzance",
+  "Plymouth",
+  "Portsmouth",
+  "Preston",
+  "Reading",
+  "Salford",
+  "Sheffield",
+  "Sidmouth",
+  "Southend-on-Sea",
+  "St Ives",
+  "Stoke-on-Trent",
+  "Sunderland",
+  "Swindon",
+  "Truro",
+  "Wakefield",
+  "Wolverhampton",
+  "Ahmedabad",
+  "Bangalore",
+  "Chennai",
+  "Ajaccio",
+  "Bordeaux",
+  "Calvi",
+  "Lille",
+  "Berlin",
+  "Bremen",
+  "Cologne",
+  "Dortmund",
+  "Dresden",
+  "Düsseldorf",
+  "Essen",
+  "Frankfurt",
+  "Hamburg",
+  "Hanover",
+  "Leipzig",
+  "Munich",
+  "Nuremberg",
+  "Stuttgart",
+  "Lyon",
+  "Marseille",
+  "Nice",
+  "Paris",
+  "Toulouse",
+  "Hyderabad",
+  "Kolkata",
+  "Mumbai",
+  "New Delhi",
+  "Pune",
+  "Surat",
+  "Denpasar",
+  "Jakarta",
+  "Tehrān",
+  "Baghdad",
+  "Fukuoka",
+  "Hiroshima",
+  "Kawasaki",
+  "Kitakyushu",
+  "Kobe",
+  "Kyoto",
+  "Busan",
+  "Seoul",
+  "Riyadh",
+  "Nagoya",
+  "Osaka",
+  "Saitama",
+  "Sapporo",
+  "Sendai",
+  "Tokyo",
+  "Yokohama"
+];
 
-  Future<Days> fetchData;
+class _AppState extends State<ChangeLoc> {
+  Map<String, String> selectedValueMap = Map();
+
   @override
   void initState() {
+    selectedValueMap["local"] = localData[0] + '   ';
     super.initState();
-    fetchData = fetchWoei('Casablanca');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Build in Silence'),
-        centerTitle: true,
+    return MaterialApp(
+      home: Scaffold(
+        body: Container(
+          child: Container(
+            padding: EdgeInsets.only(left: 20.0, top: 20.0),
+            child: Column(
+              children: <Widget>[
+                getSearchableDropdown(localData, "local"),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: Center(
-          child: FutureBuilder<Days>(
-              future: fetchData,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Column(
-                    children: [
-                      SizedBox(height: 100.0),
-                      Text(
-                        'City : ' + snapshot.data.city,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        'Date : ' + snapshot.data.date,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        'Temp : ' + snapshot.data.temp,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        'Sunrise : ' + snapshot.data.sunrise,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        'Sunset : ' + snapshot.data.sunset,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Container(
-                          height: 100,
-                          child: Image.asset(snapshot.data.imgUrl)),
-                      Icon(snapshot.data.one.icon,
-                          color: Colors.black, size: 40.0),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
+    );
+  }
 
-                // By default, show a loading spinner.
-                return CircularProgressIndicator();
-              })),
+  Widget getSearchableDropdown(List<String> listData, mapKey) {
+    List<DropdownMenuItem> items = [];
+    for (int i = 0; i < listData.length; i++) {
+      items.add(new DropdownMenuItem(
+          child: new Text(listData[i]), value: listData[i]));
+    }
+    return new SearchableDropdown(
+      items: items,
+      icon: const Icon(Icons.edit_location, size: 15.0),
+      value: selectedValueMap[mapKey],
+      isCaseSensitiveSearch: false,
+      hint: new Text(selectedValueMap["local"]),
+      underline: Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(color: Color.fromRGBO(122, 154, 1254, 0)))),
+      ),
+      searchHint: new Text(
+        'Available cities',
+        style: new TextStyle(fontSize: 20),
+      ),
+      onChanged: (value) {
+        setState(() {
+          selectedValueMap[mapKey] = value;
+          print(' -------------- Selected value : ' + value);
+        });
+      },
     );
   }
 }

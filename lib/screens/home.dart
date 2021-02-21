@@ -6,6 +6,8 @@ import 'package:weavee/models/day.dart';
 import 'package:weavee/models/tab.dart';
 import 'package:weavee/models/days.dart';
 import 'package:weavee/models/the_five_days.dart';
+import 'package:weavee/tests/home.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 
 // ---------------------- new API ---------------------- : start
 String woeid;
@@ -36,6 +38,139 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+List<String> localData = [
+  "Casablanca",
+  "Kinshasa",
+  "Alexandria",
+  "Cairo",
+  "Addis Ababa",
+  "Abidjan",
+  "Mombasa",
+  "Nairobi",
+  "Windhoek",
+  "Cardiff",
+  "Rhyl",
+  "Swansea",
+  "Ibadan",
+  "Kano",
+  "Lagos",
+  "South Africa",
+  "Cape Town",
+  "Durban",
+  "Johannesburg",
+  "Beijing",
+  "Chengdu",
+  "Dongguan",
+  "Budapest",
+  "Guangzhou",
+  "Milan",
+  "Naples",
+  "Rome",
+  "Torino",
+  "Venice",
+  "Hangzhou",
+  "Hong Kong",
+  "Shanghai",
+  "Shenzhen",
+  "Tianjin",
+  "Wuhan",
+  "Copenhagen",
+  "Birmingham",
+  "Blackpool",
+  "Bournemouth",
+  "Bradford",
+  "Brighton",
+  "Bristol",
+  "Cambridge",
+  "Coventry",
+  "Derby",
+  "Exeter",
+  "Falmouth",
+  "Huddersfield",
+  "Ipswich",
+  "Kingston upon Hull",
+  "Leeds",
+  "Leicester",
+  "Liverpool",
+  "London",
+  "Luton",
+  "Manchester",
+  "Middlesbrough",
+  "Newcastle",
+  "Northampton",
+  "Norwich",
+  "Nottingham",
+  "Oxford",
+  "Penzance",
+  "Plymouth",
+  "Portsmouth",
+  "Preston",
+  "Reading",
+  "Salford",
+  "Sheffield",
+  "Sidmouth",
+  "Southend-on-Sea",
+  "St Ives",
+  "Stoke-on-Trent",
+  "Sunderland",
+  "Swindon",
+  "Truro",
+  "Wakefield",
+  "Wolverhampton",
+  "Ahmedabad",
+  "Bangalore",
+  "Chennai",
+  "Ajaccio",
+  "Bordeaux",
+  "Calvi",
+  "Lille",
+  "Berlin",
+  "Bremen",
+  "Cologne",
+  "Dortmund",
+  "Dresden",
+  "Düsseldorf",
+  "Essen",
+  "Frankfurt",
+  "Hamburg",
+  "Hanover",
+  "Leipzig",
+  "Munich",
+  "Nuremberg",
+  "Stuttgart",
+  "Lyon",
+  "Marseille",
+  "Nice",
+  "Paris",
+  "Toulouse",
+  "Hyderabad",
+  "Kolkata",
+  "Mumbai",
+  "New Delhi",
+  "Pune",
+  "Surat",
+  "Denpasar",
+  "Jakarta",
+  "Tehrān",
+  "Baghdad",
+  "Fukuoka",
+  "Hiroshima",
+  "Kawasaki",
+  "Kitakyushu",
+  "Kobe",
+  "Kyoto",
+  "Busan",
+  "Seoul",
+  "Riyadh",
+  "Nagoya",
+  "Osaka",
+  "Saitama",
+  "Sapporo",
+  "Sendai",
+  "Tokyo",
+  "Yokohama",
+];
+
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   // ----------- Tabs building ----------- Start
   TabController tabController;
@@ -44,11 +179,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Future<Days> fetchData; // new api -----------------------------
   var currentPage = 0;
   var isPageCanChanged = true;
+  Map<String, String> selectedValueMap = Map();
   @override
   void initState() {
     super.initState();
     fetchData =
         fetchWoei('Casablanca'); // new api -----------------------------
+    selectedValueMap["local"] = localData[0];
     initTabData();
     tabController = TabController(
       length: tabList.length,
@@ -64,8 +201,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   initTabData() {
     tabList = [
-      new TabTitle(title: 'Now', id: 0),
-      new TabTitle(title: 'Week', id: 1),
+      new TabTitle(title: 'Week', id: 0),
+      new TabTitle(title: 'Change Location', id: 1),
     ];
   }
 
@@ -99,7 +236,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         actions: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Icon(Icons.menu, color: Colors.white, size: 30.0),
+            child: IconButton(
+              icon: Icon(
+                Icons.menu,
+                color: Colors.white,
+                size: 30.0,
+              ),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChangeLoc(),
+                ),
+              ),
+            ),
           )
         ],
         elevation: 0.0,
@@ -182,35 +331,38 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15.0)),
                             ),
-                            child: Padding(
-                              padding: EdgeInsets.all(14.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    snapshot.data.city,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                            child: Column(
+                              children: [
+                                // Text(
+                                //   snapshot.data.city,
+                                //   style: TextStyle(
+                                //     color: Colors.white,
+                                //     fontSize: 18.0,
+                                //     fontWeight: FontWeight.w500,
+                                //   ),
+                                // ),
+                                // SizedBox(height: 10.0),
+                                getSearchableDropdown(localData, "local"),
+                                SizedBox(height: 10.0),
+                                Text(
+                                  snapshot.data.temp + '\u00B0',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30.0,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  SizedBox(height: 15.0),
-                                  Text(
-                                    snapshot.data.temp + '\u00B0',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 30.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 25.0),
-                                  Container(
+                                ),
+                                SizedBox(height: 15.0),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Container(
                                     height:
                                         MediaQuery.of(context).size.height / 8,
                                     child: Image.asset(snapshot.data.imgUrl),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -294,6 +446,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       child: Container(
                         color: Colors.white,
                         child: PageView.builder(
+                          physics: BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics()),
                           itemCount: tabList.length,
                           onPageChanged: (index) {
                             if (isPageCanChanged) {
@@ -302,11 +456,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           },
                           controller: pageController,
                           itemBuilder: (BuildContext context, int index) {
-                            return Page(
-                                index: index, fiveDays: snapshot.data.fiveDays);
-                            // return Text('Hey');
+                            if (index == 0) {
+                              return Page(
+                                  index: index,
+                                  fiveDays: snapshot.data.fiveDays);
+                            } else {
+                              return ChangeLocation();
+                            }
                           },
-                          // scrollDirection: Axis.horizontal,
                         ),
                       ),
                     )
@@ -332,6 +489,50 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
     );
   }
+
+  Widget getSearchableDropdown(List<String> listData, mapKey) {
+    List<DropdownMenuItem> items = [];
+    for (int i = 0; i < listData.length; i++) {
+      items.add(new DropdownMenuItem(
+          child: new Text(listData[i]), value: listData[i]));
+    }
+    return new SearchableDropdown(
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 18.0,
+        fontWeight: FontWeight.w500,
+      ),
+      items: items,
+      icon: const Icon(Icons.edit_location, size: 15.0, color: Colors.white),
+      value: selectedValueMap[mapKey],
+      isCaseSensitiveSearch: false,
+      hint: new Text(
+        selectedValueMap["local"] + '  ',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 18.0,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      underline: Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(color: Color.fromRGBO(122, 154, 1254, 0)))),
+      ),
+      searchHint: new Text(
+        'Available cities',
+        style: new TextStyle(fontSize: 20),
+      ),
+      onChanged: (value) {
+        setState(() {
+          selectedValueMap[mapKey] = value;
+          fetchData = fetchWoei(value);
+          print(' -------------- Selected value : ' + value);
+          print('woeid : ' + woeid);
+        });
+      },
+    );
+  }
 }
 
 // --------------------- Row ------------------
@@ -354,7 +555,6 @@ _buildRow(String text, String value) {
             style: TextStyle(
               color: Colors.white,
               fontSize: 12.0,
-              // fontWeight: FontWeight.w200,
             ),
           ),
         ],
@@ -418,6 +618,26 @@ class Page extends StatelessWidget {
             _buildWeather(fiveDays.four),
             _buildWeather(fiveDays.five),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ChangeLocation extends StatefulWidget {
+  @override
+  _ChangeLocationState createState() => _ChangeLocationState();
+}
+
+class _ChangeLocationState extends State<ChangeLocation> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: EdgeInsets.all(15.0),
+        child: Container(
+          color: Colors.red,
         ),
       ),
     );
